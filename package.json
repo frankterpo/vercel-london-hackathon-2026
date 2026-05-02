@@ -9,11 +9,14 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/mcp": "^1.0.39",
     "@ai-sdk/react": "^3.0.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "ai": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
+    "mcp-handler": "^1.1.0",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

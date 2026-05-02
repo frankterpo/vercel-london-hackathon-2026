@@ -12,7 +12,7 @@ import { ToolingRail } from "./tooling-rail"
 import { TypingIndicator } from "./typing-indicator"
 import { Wrench } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { CopilotMessage } from "@/app/api/chat/route"
+import type { CopilotMessage } from "@/lib/copilot-message"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -20,6 +20,7 @@ export function CopilotShell() {
   const { data: config } = useSWR<{
     hasApiToken: boolean
     hasTeamId: boolean
+    localMcp?: boolean
   }>("/api/config", fetcher)
 
   const [showRail, setShowRail] = useState(false)
@@ -46,6 +47,7 @@ export function CopilotShell() {
   )
 
   const hasApiToken = config?.hasApiToken ?? false
+  const localMcp = config?.localMcp ?? true
   const hasMessages = messages.length > 0
 
   return (
@@ -82,7 +84,7 @@ export function CopilotShell() {
 
         {/* Tooling rail - desktop */}
         <div className="hidden w-72 shrink-0 lg:block">
-          <ToolingRail hasApiToken={hasApiToken} />
+          <ToolingRail hasApiToken={hasApiToken} localMcp={localMcp} />
         </div>
 
         {/* Tooling rail - mobile overlay */}
@@ -99,6 +101,7 @@ export function CopilotShell() {
             <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw]">
               <ToolingRail
                 hasApiToken={hasApiToken}
+                localMcp={localMcp}
                 onClose={() => setShowRail(false)}
               />
             </div>
