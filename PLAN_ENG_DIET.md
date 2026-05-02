@@ -13,6 +13,8 @@ Locks decisions so Mubit wiring and scoring stay consistent across PRs.
 
 **Still in-repo:** `app/api/mcp/route.ts` is fine for **local/demo wiring** inside Next.js (e.g. web UI + AI SDK merges). The **product-truth** MCP URL for the shipped GPT experience is Alpic’s host; configure Alpic to forward tool invocations to this project’s Vercel deployment.
 
+Operator checklist: [docs/alpic-host.md](./docs/alpic-host.md).
+
 **If you ever simplify to Fork B:** only if the hackathon surface is not Alpic-hosted ChatGPT anymore (all traffic through this Next app only).
 
 ## Bright Data (`BRIGHTDATA_*`)
