@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0 — 2026-05-02
+
+First stable release tag. Same app as 0.2.0 merge to `main`; semver promoted for launch / Vercel production.
+
 ## 0.2.0 — 2026-05-02
 
 - Infinite whiteboard at `/canvas` and `/canvas/[canvasId]` (tldraw, IndexedDB persistence per canvas id).
