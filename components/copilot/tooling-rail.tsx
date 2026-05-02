@@ -12,10 +12,22 @@ import { cn } from "@/lib/utils"
 
 interface ToolingRailProps {
   hasApiToken: boolean
+  localMcp?: boolean
   onClose?: () => void
 }
 
-export function ToolingRail({ hasApiToken, onClose }: ToolingRailProps) {
+function toolNeedsApiToken(entry: (typeof TOOL_REGISTRY)[number]): boolean {
+  if ("needsApiToken" in entry) {
+    return entry.needsApiToken !== false
+  }
+  return true
+}
+
+export function ToolingRail({
+  hasApiToken,
+  localMcp = true,
+  onClose,
+}: ToolingRailProps) {
   return (
     <aside className="flex h-full w-full flex-col border-l border-border bg-card/50">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -42,7 +54,30 @@ export function ToolingRail({ hasApiToken, onClose }: ToolingRailProps) {
         <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
           Connection
         </span>
-        <div className="flex items-center gap-2">
+
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            {localMcp ? (
+              <>
+                <CheckCircle2 className="h-3.5 w-3.5 text-sky-400" />
+                <span className="text-xs text-foreground/80">
+                  MCP docs helper (this app&apos;s `/api/mcp`)
+                </span>
+              </>
+            ) : (
+              <>
+                <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs text-foreground/80">
+                  MCP off —{" "}
+                  <code className="text-[10px] font-mono">
+                    VERCEL_DISABLE_LOCAL_MCP
+                  </code>
+                </span>
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
           {hasApiToken ? (
             <>
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
@@ -58,6 +93,7 @@ export function ToolingRail({ hasApiToken, onClose }: ToolingRailProps) {
               </span>
             </>
           )}
+        </div>
         </div>
         {!hasApiToken && (
           <div className="rounded-md border border-amber-400/20 bg-amber-400/5 px-3 py-2 text-[11px] text-amber-200/80 space-y-1">
@@ -88,9 +124,13 @@ export function ToolingRail({ hasApiToken, onClose }: ToolingRailProps) {
               <div
                 className={cn(
                   "mt-0.5 h-2 w-2 shrink-0 rounded-full",
-                  hasApiToken
-                    ? "bg-emerald-400/80"
-                    : "bg-muted-foreground/30"
+                  !toolNeedsApiToken(t)
+                    ? localMcp
+                      ? "bg-sky-400/85"
+                      : "bg-muted-foreground/30"
+                    : hasApiToken
+                      ? "bg-emerald-400/80"
+                      : "bg-muted-foreground/30"
                 )}
               />
               <div className="min-w-0">

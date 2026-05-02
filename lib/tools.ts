@@ -1,7 +1,7 @@
 /**
  * # Iteration knobs: PERSONA_LINE, MCP_SERVER, SURFACE (chat-only vs +dashboard)
  *
- * MCP_SERVER: Vercel MCP (projects/deployments/logs)
+ * MCP_SERVER (hybrid): in-app MCP at `/api/mcp` (documentation helper) + REST tools
  * SURFACE: chat-only (MVP)
  * PERSONA_LINE: "Terse CTO-on-call. Ends with actionable next steps."
  *
@@ -256,5 +256,12 @@ export const TOOL_REGISTRY = [
     label: "Environment Vars",
     description: "Env var names (redacted values)",
     server: "Vercel API",
+  },
+  {
+    name: "search_documentation",
+    label: "Search documentation",
+    description: "Keyword-based doc URLs + docs search link (app MCP)",
+    server: "App MCP",
+    needsApiToken: false,
   },
 ] as const

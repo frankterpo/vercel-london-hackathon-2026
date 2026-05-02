@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { ToolCallCard } from "./tool-call-card"
 import { Bot, User } from "lucide-react"
-import type { CopilotMessage } from "@/app/api/chat/route"
+import type { CopilotMessage } from "@/lib/copilot-message"
 
 interface MessageBubbleProps {
   message: CopilotMessage
