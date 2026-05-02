@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1 — 2026-05-02
+
+- Root `/` redirects to `/canvas` (new board flow).
+- Deployment chat stays at **`/copilot`**; Canvas header stripe and Copilot back-link removed from the drawing surface.
+- Copilot chrome: removed Canvas shortcut button from the Ship Check Copilot header.
+
 ## 1.0.0 — 2026-05-02
 
 First stable release tag. Same app as 0.2.0 merge to `main`; semver promoted for launch / Vercel production.
