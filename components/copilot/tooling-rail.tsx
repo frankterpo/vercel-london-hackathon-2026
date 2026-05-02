@@ -61,7 +61,7 @@ export function ToolingRail({
               <>
                 <CheckCircle2 className="h-3.5 w-3.5 text-sky-400" />
                 <span className="text-xs text-foreground/80">
-                  MCP docs helper (this app&apos;s `/api/mcp`)
+                  MCP — Streamable HTTP `/api/mcp` (merged into `/api/chat`)
                 </span>
               </>
             ) : (

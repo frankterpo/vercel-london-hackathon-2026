@@ -1,7 +1,9 @@
 "use client"
 
 import type { CheckpointBody } from "@/lib/canvas-schema"
-import { useCallback } from "react"
+import { normalizeDrawingSubject } from "@/lib/drawing-subjects"
+import { DrawingCoachHud } from "@/components/canvas/drawing-coach-hud"
+import { useCallback, useMemo, useRef } from "react"
 import type { Editor, TLShape, TLRichText } from "tldraw"
 import { Tldraw, renderPlaintextFromRichText } from "tldraw"
 import "tldraw/tldraw.css"
@@ -11,7 +13,11 @@ type TldrawInnerProps = {
   persistenceKey: string
 }
 
-export function buildCheckpointPayload(editor: Editor, canvasId: string): CheckpointBody {
+export function buildCheckpointPayload(
+  editor: Editor,
+  canvasId: string,
+  drawingSubjects?: string[]
+): CheckpointBody {
   const shapes = editor.getCurrentPageShapes()
   const shapeStats: Record<string, number> = {}
   const texts: string[] = []
@@ -32,12 +38,21 @@ export function buildCheckpointPayload(editor: Editor, canvasId: string): Checkp
       ? texts.slice(0, 32).join(" · ")
       : `Canvas (${shapes.length} shapes — ${formatShapeStats(shapeStats)})`
 
-  return {
+  const body: CheckpointBody = {
     canvasId,
     summary: summary.slice(0, 8000),
     shapeStats,
     shapeCount: shapes.length,
   }
+
+  if (drawingSubjects?.length) {
+    const uniq = [
+      ...new Set(drawingSubjects.map((x) => normalizeDrawingSubject(x)).filter(Boolean)),
+    ].slice(0, 24)
+    if (uniq.length > 0) body.drawingSubjects = uniq
+  }
+
+  return body
 }
 
 function formatShapeStats(stats: Record<string, number>): string {
@@ -46,8 +61,13 @@ function formatShapeStats(stats: Record<string, number>): string {
     .join(", ")
 }
 
-async function postCheckpoint(editor: Editor, canvasId: string) {
-  const payload = buildCheckpointPayload(editor, canvasId)
+async function postCheckpoint(
+  editor: Editor,
+  canvasId: string,
+  coachSubjectsRef: { current: string[] }
+) {
+  const subjects = coachSubjectsRef.current
+  const payload = buildCheckpointPayload(editor, canvasId, subjects.length > 0 ? subjects : undefined)
   try {
     await fetch("/api/canvas/checkpoint", {
       method: "POST",
@@ -61,20 +81,31 @@ async function postCheckpoint(editor: Editor, canvasId: string) {
 }
 
 export function TldrawInner({ canvasId, persistenceKey }: TldrawInnerProps) {
+  const coachSubjectsRef = useRef<string[]>([])
+
+  const coachComponents = useMemo(
+    () => ({
+      InFrontOfTheCanvas() {
+        return <DrawingCoachHud canvasId={canvasId} subjectsRef={coachSubjectsRef} />
+      },
+    }),
+    [canvasId]
+  )
+
   const onMount = useCallback(
     (editor: Editor) => {
       let timeout: ReturnType<typeof setTimeout> | undefined
       const schedule = () => {
         clearTimeout(timeout)
         timeout = setTimeout(() => {
-          void postCheckpoint(editor, canvasId)
+          void postCheckpoint(editor, canvasId, coachSubjectsRef)
         }, 9000)
       }
       const unsub = editor.store.listen(() => {
         schedule()
       })
       queueMicrotask(() => {
-        void postCheckpoint(editor, canvasId)
+        void postCheckpoint(editor, canvasId, coachSubjectsRef)
       })
       return () => {
         unsub()
@@ -86,7 +117,11 @@ export function TldrawInner({ canvasId, persistenceKey }: TldrawInnerProps) {
 
   return (
     <div className="h-full min-h-[320px] w-full">
-      <Tldraw persistenceKey={persistenceKey} onMount={onMount} />
+      <Tldraw
+        persistenceKey={persistenceKey}
+        onMount={onMount}
+        components={coachComponents}
+      />
     </div>
   )
 }

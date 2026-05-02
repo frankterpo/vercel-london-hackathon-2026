@@ -25,7 +25,14 @@ export async function POST(req: Request) {
     return Response.json({ ok: true, persisted: false, reason: "mubit_unconfigured" })
   }
 
-  const { canvasId, summary, shapeStats, shapeCount, topicTags } = parsed.data
+  const {
+    canvasId,
+    summary,
+    shapeStats,
+    shapeCount,
+    topicTags,
+    drawingSubjects,
+  } = parsed.data
 
   try {
     await client.remember({
@@ -41,6 +48,9 @@ export async function POST(req: Request) {
         shape_stats: shapeStats ?? {},
         shape_count: shapeCount ?? null,
         topic_tags: topicTags ?? [],
+        ...(drawingSubjects?.length ?
+          { drawing_subjects: drawingSubjects }
+        : {}),
       },
       upsert_key: `canvas_cp:${tenantId}:${canvasId}`,
     })
