@@ -41,15 +41,30 @@ export async function POST(req: Request) {
     .filter(Boolean)
   const uniqueSubjects = [...new Set(subjects)].slice(0, 16)
 
-  const searchQuery =
-    analysis.primarySubject?.trim() ||
-    uniqueSubjects[0] ||
-    "reference subject"
+  /** Without a real subject, image search degenerates into random SERP junk. */
+  const usableSubject =
+    !visionError &&
+    (Boolean(analysis.primarySubject?.trim()) || uniqueSubjects.length > 0)
 
-  const { hits: referenceImages, reason: brightReason } = await fetchGoogleImageReferences({
-    query: `${searchQuery} photo`,
-    limit: 6,
-  })
+  let referenceImages: Awaited<
+    ReturnType<typeof fetchGoogleImageReferences>
+  >["hits"] = []
+  let brightReason: string | null | undefined
+
+  if (usableSubject) {
+    const searchQuery =
+      analysis.primarySubject?.trim() || uniqueSubjects[0] || "reference subject"
+    const ref = await fetchGoogleImageReferences({
+      query: `${searchQuery} photo`,
+      limit: 6,
+    })
+    referenceImages = ref.hits
+    brightReason = ref.reason ?? null
+  } else if (visionError) {
+    brightReason = "skipped_vision_unavailable"
+  } else {
+    brightReason = "skipped_no_subject"
+  }
 
   let priorSameSubject: {
     canvasId: string

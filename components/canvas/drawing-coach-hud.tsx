@@ -147,6 +147,10 @@ export function DrawingCoachHud({ canvasId, subjectsRef, excalidrawApiRef }: Dra
           <p className="text-[11px] text-muted-foreground">
             {coach.referenceMeta.brightReason === "brightdata_unconfigured" ?
               "Reference photos: run `pnpm brightdata:login` then `pnpm brightdata:print-env`, paste into .env (or set BRIGHTDATA_* in Vercel). Keys: see .env.example."
+            : coach.referenceMeta.brightReason === "skipped_vision_unavailable" ?
+              "Reference photos skipped until vision runs: enable AI Gateway billing or set ANTHROPIC_API_KEY on the deployment."
+            : coach.referenceMeta.brightReason === "skipped_no_subject" ?
+              "Reference photos skipped: no searchable subject detected yet — add clearer strokes, then Analyze again."
             : `No reference images (${coach.referenceMeta.brightReason}).`}
           </p>
         : null}
