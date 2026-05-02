@@ -5,6 +5,9 @@ node_modules/
 .next/
 out/
 
+# gstack local state
+.gstack/
+
 # Env (never commit secrets)
 .env
 .env.*
