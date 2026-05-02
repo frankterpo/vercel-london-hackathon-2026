@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { analyzeSketchPngBase64 } from "@/lib/canvas-coach-analyze"
+import { analyzeSketchPngBase64, coachVisionUsesDirectAnthropic } from "@/lib/canvas-coach-analyze"
 import { fetchGoogleImageReferences } from "@/lib/brightdata-reference-images"
 import { normalizeDrawingSubject, subjectsOverlap } from "@/lib/drawing-subjects"
 import { getServerMubitClient } from "@/lib/mubit-client"
@@ -83,5 +83,6 @@ export async function POST(req: Request) {
     referenceMeta: { brightReason: brightReason ?? null },
     priorSameSubject,
     visionError: visionError ?? null,
+    visionTransport: coachVisionUsesDirectAnthropic() ? "anthropic" : "gateway",
   })
 }

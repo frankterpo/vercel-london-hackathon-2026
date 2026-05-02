@@ -22,6 +22,8 @@ type CoachResponse = {
     drawingSubjects?: string[]
   }[]
   visionError?: string | null
+  /** Where vision runs: Anthropic API vs Vercel AI Gateway (needs team billing/card for many setups). */
+  visionTransport?: "anthropic" | "gateway"
   error?: string
 }
 

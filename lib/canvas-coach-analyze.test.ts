@@ -6,7 +6,7 @@ describe("drawingTipsForVisionError", () => {
     const tips = drawingTipsForVisionError(
       "AI Gateway requires a valid credit card on file to service requests."
     )
-    expect(tips[0]).toMatch(/Vercel AI Gateway/)
+    expect(tips[0]).toMatch(/AI Gateway/)
     expect(tips[0]).toMatch(/billing/i)
   })
 

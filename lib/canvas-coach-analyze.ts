@@ -1,3 +1,4 @@
+import { anthropic } from "@ai-sdk/anthropic"
 import { generateObject } from "ai"
 import { z } from "zod"
 
@@ -21,6 +22,10 @@ const coachSchema = z.object({
 
 export type DrawingCoachAnalysis = z.infer<typeof coachSchema>
 
+/** Sonnet-class model with vision; override via DRAWING_COACH_ANTHROPIC_MODEL if Anthropic renames snapshots. */
+const DEFAULT_ANTHROPIC_VISION_MODEL = "claude-sonnet-4-20250514"
+const GATEWAY_VISION_MODEL = "anthropic/claude-sonnet-4"
+
 const SYSTEM = `You are a supportive drawing coach. Look at the rough whiteboard/sketch image.
 Identify what the artist is most likely trying to draw (real-world objects, animals, people, plants, vehicles, buildings).
 If the canvas is empty or only abstract squiggles, return low confidence, empty or generic subjects, and tips about blocking in basic shapes.
@@ -33,11 +38,13 @@ export function drawingTipsForVisionError(message: string): string[] {
   if (
     m.includes("credit card") ||
     m.includes("add a card") ||
-    m.includes("billing") ||
-    m.includes("/ai") && m.includes("vercel")
+    (m.includes("billing") &&
+      (m.includes("gateway") || m.includes("vercel AI") || m.includes("service requests"))) ||
+    (m.includes("/ai") && m.includes("vercel"))
   ) {
     return [
-      "Vercel AI Gateway needs billing enabled on your team (add a card in the Vision note below). Until then, vision stays off.",
+      "Enable Vercel AI Gateway for your team: add a billing method so Gateway accepts `anthropic/claude-sonnet-4` (see https://vercel.com/ai-gateway).",
+      "Bypass only for drawing coach: set ANTHROPIC_API_KEY to call Claude directly (`@ai-sdk/anthropic`).",
     ]
   }
   if (m.includes("401") || m.includes("unauthorized") || m.includes("authentication") || m.includes("api key")) {
@@ -52,6 +59,20 @@ export function drawingTipsForVisionError(message: string): string[] {
     "Vision could not complete. Read the Vision note below for the raw error. If it mentions the network or timeout, retry once.",
     "Still stuck? Try Analyze again after adding a couple of clear strokes so the PNG is not basically empty.",
   ]
+}
+
+/** Uses `@ai-sdk/anthropic` when `ANTHROPIC_API_KEY` is set; otherwise the AI Gateway slug (needs team billing on many accounts). */
+export function coachVisionUsesDirectAnthropic(): boolean {
+  return Boolean(process.env.ANTHROPIC_API_KEY?.trim())
+}
+
+export function coachVisionModel() {
+  if (coachVisionUsesDirectAnthropic()) {
+    const id =
+      process.env.DRAWING_COACH_ANTHROPIC_MODEL?.trim() || DEFAULT_ANTHROPIC_VISION_MODEL
+    return anthropic(id)
+  }
+  return GATEWAY_VISION_MODEL
 }
 
 export async function analyzeSketchPngBase64(
@@ -74,7 +95,7 @@ export async function analyzeSketchPngBase64(
 
   try {
     const { object } = await generateObject({
-      model: "anthropic/claude-sonnet-4",
+      model: coachVisionModel(),
       schema: coachSchema,
       system: SYSTEM,
       messages: [

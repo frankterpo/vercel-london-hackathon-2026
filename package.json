@@ -14,6 +14,7 @@
     "brightdata:print-env": "node scripts/brightdata-print-env.mjs"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.74",
     "@ai-sdk/mcp": "^1.0.39",
     "@ai-sdk/react": "^3.0.0",
     "@excalidraw/excalidraw": "^0.18.1",
