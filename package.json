@@ -1,6 +1,6 @@
 {
   "name": "ship-check-copilot",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@ai-sdk/mcp": "^1.0.39",
     "@ai-sdk/react": "^3.0.0",
+    "@excalidraw/excalidraw": "^0.18.1",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@mubit-ai/sdk": "^0.7.0",
     "ai": "^6.0.0",
@@ -29,7 +30,6 @@
     "swr": "^2.3.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "tldraw": "^4.5.10",
     "zod": "^3.24.0"
   },
   "devDependencies": {

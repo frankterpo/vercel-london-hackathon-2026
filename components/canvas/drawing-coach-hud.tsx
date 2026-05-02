@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { useCallback, useState } from "react"
 import type { MutableRefObject } from "react"
-import { useEditor } from "tldraw"
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types"
+import { excalidrawSceneToDataUrl } from "@/lib/canvas-export-image"
 
 type CoachResponse = {
   analysis: {
@@ -24,22 +25,13 @@ type CoachResponse = {
   error?: string
 }
 
-function blobToDataUrl(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader()
-    r.onloadend = () => resolve(String(r.result ?? ""))
-    r.onerror = () => reject(r.error ?? new Error("read failed"))
-    r.readAsDataURL(blob)
-  })
-}
-
 type DrawingCoachHudProps = {
   canvasId: string
   subjectsRef: MutableRefObject<string[]>
+  excalidrawApiRef: MutableRefObject<ExcalidrawImperativeAPI | null>
 }
 
-export function DrawingCoachHud({ canvasId, subjectsRef }: DrawingCoachHudProps) {
-  const editor = useEditor()
+export function DrawingCoachHud({ canvasId, subjectsRef, excalidrawApiRef }: DrawingCoachHudProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [busy, setBusy] = useState(false)
   const [coach, setCoach] = useState<CoachResponse | null>(null)
@@ -49,32 +41,23 @@ export function DrawingCoachHud({ canvasId, subjectsRef }: DrawingCoachHudProps)
     setBusy(true)
     setLocalError(null)
     try {
-      const ids = [...editor.getCurrentPageShapeIds()]
-      if (ids.length === 0) {
+      const api = excalidrawApiRef.current
+      if (!api) {
+        setLocalError("Canvas is still loading. Try again.")
+        return
+      }
+
+      const strokes = api.getSceneElements().filter((e) => !e.isDeleted)
+      if (strokes.length === 0) {
         setLocalError("Sketch something first, then analyze.")
         return
       }
 
-      try {
-        await editor.fonts.loadRequiredFontsForCurrentPage(editor.options.maxFontsToLoadBeforeRender)
-      } catch {
-        /* fonts best-effort */
-      }
-
-      const imageResult = await editor.toImage(ids, {
-        format: "png",
-        background: true,
-        padding: 24,
-        scale: 0.45,
-        darkMode: false,
-      })
-
-      if (!imageResult?.blob) {
+      const dataUrl = await excalidrawSceneToDataUrl(api)
+      if (!dataUrl) {
         setLocalError("Could not export the canvas.")
         return
       }
-
-      const dataUrl = await blobToDataUrl(imageResult.blob)
       const res = await fetch("/api/canvas/coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -102,7 +85,7 @@ export function DrawingCoachHud({ canvasId, subjectsRef }: DrawingCoachHudProps)
     } finally {
       setBusy(false)
     }
-  }, [canvasId, editor, subjectsRef])
+  }, [canvasId, excalidrawApiRef, subjectsRef])
 
   if (collapsed) {
     return (
