@@ -1,7 +1,6 @@
 "use client"
 
-import Link from "next/link"
-import { Triangle, LayoutDashboard } from "lucide-react"
+import { Triangle } from "lucide-react"
 
 interface ConnectionBadgeProps {
   label: string
@@ -45,18 +44,9 @@ export function Header({ hasApiToken }: HeaderProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Link
-          href="/canvas"
-          className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
-        >
-          <LayoutDashboard className="h-3.5 w-3.5" aria-hidden />
-          Canvas
-        </Link>
-        <div className="hidden items-center gap-2 sm:flex">
-          <ConnectionBadge label="AI Gateway" connected={true} />
-          <ConnectionBadge label="Vercel API" connected={hasApiToken} />
-        </div>
+      <div className="hidden items-center gap-2 sm:flex">
+        <ConnectionBadge label="AI Gateway" connected={true} />
+        <ConnectionBadge label="Vercel API" connected={hasApiToken} />
       </div>
     </header>
   )
