@@ -20,8 +20,6 @@ Email: [me@oscarama.dev](mailto:me@oscarama.dev)
 
 Share what you ship! Use #ZeroToAgent, tag @vercel and @oscarfalll
 
-
-
 # WiFi
 
 Name: `Halkin-WiFi Guest`
@@ -79,10 +77,8 @@ Vercel page
 **[Sign In](https://community.vercel.com/login)**
 
 1. [Events](https://community.vercel.com/events)
-
-3. [Hackathons](https://community.vercel.com/hackathons)
-
-5. Zero to Agent
+2. [Hackathons](https://community.vercel.com/hackathons)
+3. Zero to Agent
 
 # **Zero to Agent**
 
