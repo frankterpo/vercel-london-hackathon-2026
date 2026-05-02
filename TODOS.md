@@ -4,7 +4,7 @@ Captured from `/plan-eng-review` (2026-05-02).
 
 ## Ship lock-in (2026-05-02)
 
-- **Engineering forks:** Frozen in `PLAN_ENG_DIET.md` — MVP path is Fork B (MCP served by Next on Vercel); Alpic stays for APIs/connector ops.
+- **Engineering forks:** Frozen in `PLAN_ENG_DIET.md` — **Fork A:** Alpic owns MCP for the hosted ChatGPT app; Vercel hosts tool execution. In-repo `/api/mcp` is secondary (local/Next merges).
 - **Env contract:** `.env.example` documents `BRIGHTDATA_*` + Alpic/Vercel/Mubit keys; `.env` is local-only.
 - **MVP scoring axis:** Calories only until thaw in `lib/diet/mvp-goal.ts` + plan doc — then wire Mubit + Bright Data-backed tools against that contract.
 

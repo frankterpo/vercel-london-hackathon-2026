@@ -2,16 +2,18 @@
 
 Locks decisions so Mubit wiring and scoring stay consistent across PRs.
 
-## Fork A vs Fork B — **chosen: Fork B**
+## Fork A vs Fork B — **chosen: Fork A**
 
 | Option | MCP host | Typical use |
 |--------|----------|-------------|
-| **Fork A** | Alpic-hosted HTTP MCP surface; tool execution hits Vercel routes | Judges see MCP “owned” by Alpic; dual surface to operate |
-| **Fork B** | Next.js app on Vercel exposes Streamable HTTP MCP (e.g. `/api/mcp`) | Single deploy boundary; simpler demo + fewer moving parts |
+| **Fork A** | Alpic-hosted HTTP MCP surface; tool execution hits Vercel routes | Alpic owns the connector the ChatGPT app talks to |
+| **Fork B** | Next.js app on Vercel exposes Streamable HTTP MCP (e.g. `/api/mcp`) | Single deploy boundary; dev-only shortcut if GPT never leaves Vercel |
 
-**Locked: Fork B** — this repo already implements MCP beside chat (`app/api/mcp/route.ts`). `ALPIC_API_KEY` remains for Alpic Deploy / management APIs and connector-facing setup, not for replacing in-app MCP routing in MVP.
+**Locked: Fork A** — Alpic is the platform hosting the ChatGPT app and must own the MCP entrypoint users (and GPT) attach to for tool discovery/calls. Vercel remains where tool handlers run (`/api/agent/*`-style HTTPS routes).
 
-**If you pivot to Fork A:** stand up Alpic MCP config to forward tool calls into this project’s HTTPS tool routes on Vercel; document new env + URL contract here.
+**Still in-repo:** `app/api/mcp/route.ts` is fine for **local/demo wiring** inside Next.js (e.g. web UI + AI SDK merges). The **product-truth** MCP URL for the shipped GPT experience is Alpic’s host; configure Alpic to forward tool invocations to this project’s Vercel deployment.
+
+**If you ever simplify to Fork B:** only if the hackathon surface is not Alpic-hosted ChatGPT anymore (all traffic through this Next app only).
 
 ## Bright Data (`BRIGHTDATA_*`)
 
