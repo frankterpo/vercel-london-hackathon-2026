@@ -1,11 +1,11 @@
 /**
- * # Iteration knobs: PERSONA_LINE, MCP_SERVER, SURFACE (chat-only vs +dashboard)
+ * Chat tools: **Vercel REST** only in this file (`vercelTools` → api.vercel.com).
  *
- * MCP_SERVER (hybrid): in-app MCP at `/api/mcp` (documentation helper) + REST tools
- * SURFACE: chat-only (MVP)
- * PERSONA_LINE: "Terse CTO-on-call. Ends with actionable next steps."
+ * MCP-backed tools (e.g. `search_documentation`) are **not** defined here. They are served
+ * by Streamable HTTP MCP at `app/api/mcp/route.ts` and merged in `app/api/chat/route.ts`
+ * via `lib/local-mcp-client.ts` (`@ai-sdk/mcp`). See README tooling model section.
  *
- * Future: GitHub MCP for PR status, commit diffs
+ * Iteration knobs: PERSONA_LINE in `lib/system-prompt.ts`, SURFACE (chat-only MVP).
  */
 
 import { tool } from "ai"
@@ -261,7 +261,7 @@ export const TOOL_REGISTRY = [
     name: "search_documentation",
     label: "Search documentation",
     description: "Keyword-based doc URLs + docs search link (app MCP)",
-    server: "App MCP",
+    server: "MCP (/api/mcp)",
     needsApiToken: false,
   },
 ] as const

@@ -32,8 +32,10 @@ export function extractPriorCanvasSuggestions(
             ? obj.rank
             : undefined
 
+    const drawingSubjects = readDrawingSubjects(obj)
+
     if (canvasId && canvasId !== excludeCanvasId) {
-      found.push({ canvasId, content, score })
+      found.push({ canvasId, content, score, drawingSubjects })
     }
 
     for (const v of Object.values(obj)) visit(v)
@@ -45,11 +47,28 @@ export function extractPriorCanvasSuggestions(
   for (const hit of found) {
     const prev = byId.get(hit.canvasId)
     if (!prev || (hit.score ?? 0) > (prev.score ?? 0)) {
-      byId.set(hit.canvasId, hit)
+      byId.set(hit.canvasId, {
+        ...hit,
+        drawingSubjects: hit.drawingSubjects?.length ? hit.drawingSubjects : prev?.drawingSubjects,
+      })
+    } else if (prev && hit.drawingSubjects?.length && !prev.drawingSubjects?.length) {
+      byId.set(hit.canvasId, { ...prev, drawingSubjects: hit.drawingSubjects })
     }
   }
 
   return [...byId.values()].sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+}
+
+function readDrawingSubjects(obj: Record<string, unknown>): string[] | undefined {
+  const meta = obj.metadata ?? obj.meta
+  if (meta && typeof meta === "object") {
+    const m = meta as Record<string, unknown>
+    const ds = m.drawing_subjects ?? m.drawingSubjects
+    if (Array.isArray(ds)) {
+      return ds.filter((x): x is string => typeof x === "string" && x.trim().length > 0)
+    }
+  }
+  return undefined
 }
 
 function readCanvasId(obj: Record<string, unknown>): string | undefined {

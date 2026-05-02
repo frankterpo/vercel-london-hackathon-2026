@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Ship Check Copilot",
   description:
-    "AI-powered deployment copilot for Vercel: REST-backed project and deployment checks plus an embedded MCP docs helper.",
+    "AI deployment copilot: Vercel REST API tools plus Streamable MCP at /api/mcp (docs helper), merged in chat.",
 }
 
 export const viewport: Viewport = {

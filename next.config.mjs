@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactCompiler: true,
-  serverExternalPackages: ['tldraw', '@tldraw/editor', '@tldraw/store'],
+  transpilePackages: ['@excalidraw/excalidraw'],
 }
 
 export default nextConfig

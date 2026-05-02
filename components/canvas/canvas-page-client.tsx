@@ -6,8 +6,8 @@ import { useEffect, useMemo, useState } from "react"
 import type { PriorCanvasSuggestion } from "@/lib/canvas-schema"
 import { PriorCanvasModal } from "@/components/canvas/prior-canvas-modal"
 
-const TldrawInner = dynamic(
-  () => import("@/components/canvas/tldraw-inner").then((m) => m.TldrawInner),
+const ExcalidrawInner = dynamic(
+  () => import("@/components/canvas/excalidraw-inner").then((m) => m.ExcalidrawInner),
   { ssr: false, loading: () => <CanvasLoading /> }
 )
 
@@ -89,7 +89,7 @@ export function CanvasPageClient({ canvasId }: CanvasPageClientProps) {
   return (
     <div className="flex h-dvh flex-col bg-background">
       <div className="min-h-0 flex-1">
-        <TldrawInner canvasId={canvasId} persistenceKey={persistenceKey} />
+        <ExcalidrawInner canvasId={canvasId} persistenceKey={persistenceKey} />
       </div>
 
       <PriorCanvasModal open={modalOpen} suggestion={suggestion} onDismissNew={dismissNew} />

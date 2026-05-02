@@ -30,8 +30,9 @@ export function PriorCanvasModal({ open, suggestion, onDismissNew }: PriorCanvas
           Similar workspace found
         </h2>
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-          MuBit matched topic overlap with another canvas checkpoint. Continue there or keep this blank
-          canvas.
+          {suggestion.drawingSubjects?.length ?
+            `MuBit sees overlap with things you drew before (${suggestion.drawingSubjects.slice(0, 5).join(", ")}). Open the earlier canvas or keep working here.`
+          : "MuBit matched topic overlap with another canvas checkpoint. Continue there or keep this blank canvas."}
         </p>
         <blockquote className="mt-3 rounded-md border border-border bg-secondary/40 px-3 py-2 font-mono text-[11px] text-muted-foreground">
           {preview}
