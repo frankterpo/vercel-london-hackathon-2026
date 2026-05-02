@@ -2,6 +2,12 @@
 
 Captured from `/plan-eng-review` (2026-05-02).
 
+## Ship lock-in (2026-05-02)
+
+- **Engineering forks:** Frozen in `PLAN_ENG_DIET.md` — MVP path is Fork B (MCP served by Next on Vercel); Alpic stays for APIs/connector ops.
+- **Env contract:** `.env.example` documents `BRIGHTDATA_*` + Alpic/Vercel/Mubit keys; `.env` is local-only.
+- **MVP scoring axis:** Calories only until thaw in `lib/diet/mvp-goal.ts` + plan doc — then wire Mubit + Bright Data-backed tools against that contract.
+
 ## Add Vitest (or runner) + coverage for `lib/tools.ts`
 
 - **What:** Introduce automated tests and cover `vercelFetch` branches: 401 with JSON `{ error.code }`; plain `{ error }` body; `meta`/branch omissions; deployments array vs `{ deployments }` wrapper.
