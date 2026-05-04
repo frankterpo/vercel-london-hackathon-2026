@@ -23,7 +23,7 @@ type CoachResponse = {
   }[]
   visionError?: string | null
   /** Where vision runs: Anthropic API vs Vercel AI Gateway (needs team billing/card for many setups). */
-  visionTransport?: "anthropic" | "gateway"
+  visionTransport?: "anthropic" | "openai" | "gateway" | "opencode"
   error?: string
 }
 
@@ -143,12 +143,15 @@ export function DrawingCoachHud({ canvasId, subjectsRef, excalidrawApiRef }: Dra
           </div>
         : null}
 
-        {coach && coach.referenceImages.length === 0 && coach.referenceMeta.brightReason ?
+        {coach &&
+        coach.referenceImages.length === 0 &&
+        coach.referenceMeta.brightReason &&
+        (coach.referenceMeta.brightReason !== "skipped_vision_unavailable" || !coach.visionError) ?
           <p className="text-[11px] text-muted-foreground">
             {coach.referenceMeta.brightReason === "brightdata_unconfigured" ?
               "Reference photos: run `pnpm brightdata:login` then `pnpm brightdata:print-env`, paste into .env (or set BRIGHTDATA_* in Vercel). Keys: see .env.example."
             : coach.referenceMeta.brightReason === "skipped_vision_unavailable" ?
-              "Reference photos skipped until vision runs: enable AI Gateway billing or set ANTHROPIC_API_KEY on the deployment."
+              "Reference photos need a successful vision pass first (billing or ANTHROPIC_API_KEY)."
             : coach.referenceMeta.brightReason === "skipped_no_subject" ?
               "Reference photos skipped: no searchable subject detected yet — add clearer strokes, then Analyze again."
             : `No reference images (${coach.referenceMeta.brightReason}).`}

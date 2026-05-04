@@ -10,7 +10,8 @@ export function getServerMubitClient(): Client | null {
     cached = null
     return null
   }
-  const transport = (process.env.MUBIT_TRANSPORT as TransportMode) ?? "auto"
+  /** `auto` may pick gRPC (`@grpc/grpc-js`), which breaks in Next (null `fs.readFileSync`). Prefer HTTP in server routes. */
+  const transport = (process.env.MUBIT_TRANSPORT as TransportMode) ?? "http"
   cached = new Client({
     api_key: apiKey,
     endpoint:

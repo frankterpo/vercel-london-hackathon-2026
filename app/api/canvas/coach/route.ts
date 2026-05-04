@@ -1,5 +1,8 @@
 import { z } from "zod"
-import { analyzeSketchPngBase64, coachVisionUsesDirectAnthropic } from "@/lib/canvas-coach-analyze"
+import {
+  analyzeSketchPngBase64,
+  coachPrimaryVisionTransportPreference,
+} from "@/lib/canvas-coach-analyze"
 import { fetchGoogleImageReferences } from "@/lib/brightdata-reference-images"
 import { normalizeDrawingSubject, subjectsOverlap } from "@/lib/drawing-subjects"
 import { getServerMubitClient } from "@/lib/mubit-client"
@@ -34,7 +37,8 @@ export async function POST(req: Request) {
 
   const { canvasId, imageBase64 } = parsed.data
 
-  const { analysis, error: visionError } = await analyzeSketchPngBase64(imageBase64)
+  const { analysis, error: visionError, visionTransport } =
+    await analyzeSketchPngBase64(imageBase64)
 
   const subjects = analysis.subjects
     .map((s) => normalizeDrawingSubject(s))
@@ -98,6 +102,6 @@ export async function POST(req: Request) {
     referenceMeta: { brightReason: brightReason ?? null },
     priorSameSubject,
     visionError: visionError ?? null,
-    visionTransport: coachVisionUsesDirectAnthropic() ? "anthropic" : "gateway",
+    visionTransport: visionTransport ?? coachPrimaryVisionTransportPreference(),
   })
 }

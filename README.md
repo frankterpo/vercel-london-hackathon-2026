@@ -25,9 +25,9 @@ Server routes read **`process.env` at runtime** on Vercel (values are **not bake
 |---------|----------------|
 | REST copilot tools | `VERCEL_API_TOKEN` (+ optional `VERCEL_TEAM_ID`) → `api.vercel.com`. |
 | Copilot chat + streaming | Uses **AI SDK provider strings** (e.g. `anthropic/claude-sonnet-4`), which route through **[Vercel AI Gateway](https://vercel.com/ai-gateway)** on your deployment. Billing / card-on-file applies per your team. |
-| Drawing coach vision | Same Gateway model **unless** you set **`ANTHROPIC_API_KEY`**, then coach calls Anthropic directly (see `.env.example`). |
+| Drawing coach vision | **Order:** Anthropic BYO → OpenAI BYO → **Vercel Gateway** → **OpenCode Zen** (`OPENCODE_API_KEY`): Claude **`/v1/messages`** proxy at (`https://opencode.ai/zen/v1`). Zen free *chat* models cannot see images; coach uses **`claude-sonnet-4`** by default (Zen pricing). |
 
-For Gateway-only setups: **do not** set `ANTHROPIC_API_KEY`; complete AI Gateway onboarding and redeploy after adding `VERCEL_API_TOKEN`.
+Gateway-only: finish AI onboarding. If Gateway blocks billing, add **`OPENCODE_API_KEY`** or OpenAI/Anthropic keys.
 
 ## Setup
 
